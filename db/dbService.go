@@ -20,11 +20,6 @@ func NewDatabase(connectionString string) (*Database, error) {
 		return nil, errors.Wrap(err, "ошибка подключения к базе данных")
 	}
 
-	err = createDatabaseIfNotExists(connection, "PolandFlatsScrapper")
-	if err != nil {
-		return nil, errors.Wrap(err, "ошибка создания базы данных, если она не существует")
-	}
-
 	err = createTableIfNotExists(connection)
 	if err != nil {
 		return nil, errors.Wrap(err, "ошибка создания таблицы, если она не существует")
