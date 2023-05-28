@@ -1,10 +1,15 @@
 module main.go
 
-go 1.17
+go 1.20
 
 require (
-	github.com/PuerkitoBio/goquery v1.8.0 // indirect
-	github.com/andybalholm/cascadia v1.3.1 // indirect
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8 // indirect
+	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/mattn/go-sqlite3 v1.14.16
+)
+
+require (
+	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/net v0.10.0 // indirect
 )

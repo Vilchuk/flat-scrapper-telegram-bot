@@ -6,51 +6,59 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 const (
-	chatID       = 505172736
-	chatID2      = 307669920
-	BOT_TOKEN    = "5059878186:AAHZ0GgLS6qDVajWQ7lO-Et03t7duKWJ8bE"
-	TELEGRAM_URL = "https://api.telegram.org/bot"
+	ARTSEM_CHAT_ID  = 505172736
+	VALERYA_CHAT_ID = 307669920
+	BOT_TOKEN       = "5059878186:AAHZ0GgLS6qDVajWQ7lO-Et03t7duKWJ8bE"
+	TELEGRAM_URL    = "https://api.telegram.org/bot"
 )
 
-type BotSendMessageID = struct {
+type BotSendMessageID struct {
 	Result struct {
 		Message_id string
 	}
 }
 
-func SendMessage(text string) {
-	sendTextToTelegramChat(chatID, text)
-	sendTextToTelegramChat(chatID2, text)
+func SendMessage(text string) error {
+	err := sendTextToTelegramChat(ARTSEM_CHAT_ID, text)
+	if err != nil {
+		return errors.Wrap(err, "error sending message to Telegram")
+	}
+	//err = sendTextToTelegramChat(VALERYA_CHAT_ID, text)
+	//if err != nil {
+	//	return err
+	//}
+	return nil
 }
 
-// sendTextToTelegramChat sends a text message to the Telegram chat identified by its chat Id
-func sendTextToTelegramChat(chatId int, text string) (string, error) {
-
-	log.Printf("Sending %s to chat_id: %d", text, chatId)
-	var telegramApi string = TELEGRAM_URL + BOT_TOKEN + "/sendMessage"
+func sendTextToTelegramChat(chatID int, text string) error {
+	telegramAPI := TELEGRAM_URL + BOT_TOKEN + "/sendMessage"
 	response, err := http.PostForm(
-		telegramApi,
+		telegramAPI,
 		url.Values{
-			"chat_id": {strconv.Itoa(chatId)},
+			"chat_id": {strconv.Itoa(chatID)},
 			"text":    {text},
 		})
 
 	if err != nil {
 		log.Printf("error when posting text to the chat: %s", err.Error())
-		return "", err
+		return errors.Wrap(err, "error posting text to the chat")
 	}
-	defer response.Body.Close()
+	defer func() {
+		err := response.Body.Close()
+		if err != nil {
+			log.Printf("error when closing response body: %s", err.Error())
+		}
+	}()
 
-	var bodyBytes, errRead = ioutil.ReadAll(response.Body)
-	if errRead != nil {
-		log.Printf("error in parsing telegram answer %s", errRead.Error())
-		return "", err
+	_, err = ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Printf("error in parsing telegram answer: %s", err.Error())
+		return errors.Wrap(err, "error parsing telegram answer")
 	}
-	bodyString := string(bodyBytes)
-	//log.Printf("Body of Telegram Response: %s", bodyString)
-
-	return bodyString, nil
+	return nil
 }
