@@ -50,7 +50,7 @@ func search(isFirst bool) error {
 		if cerr := database.Close(); cerr != nil {
 			log.Println("error closing database connection:", cerr)
 		}
-		fmt.Println("Подключение к базе данных закрыто")
+		fmt.Println("Подключение к базе данных закрыто\n---------------------------------")
 	}()
 
 	dt := time.Now()
